@@ -172,7 +172,7 @@ function CountdownBomb() {
             <button
               type="button"
               onClick={startTimer}
-              className="w-full py-5 sm:py-7 px-6 sm:px-8 bg-red-600 hover:bg-red-700 text-white font-semibold text-xl sm:text-2xl rounded-2xl border-2 border-red-400 transition-all duration-200 transform hover:scale-105 shadow-xl shadow-red-500/40 min-h-[72px] sm:min-h-[84px]"
+              className="w-full py-6 sm:py-7 px-7 sm:px-9 bg-red-600 hover:bg-red-700 text-white font-semibold text-2xl sm:text-3xl rounded-3xl border-2 border-red-400 transition-all duration-200 transform hover:scale-105 shadow-xl shadow-red-500/40 min-h-[84px] sm:min-h-[96px]"
             >
               ARM BOMB
             </button>
@@ -187,7 +187,7 @@ function CountdownBomb() {
               onTouchStart={handleDefuseStart}
               onTouchEnd={handleDefuseEnd}
               disabled={timeLeft === 0 || isDefused}
-              className={`w-full py-4 sm:py-6 px-4 sm:px-6 text-white font-bold text-base sm:text-lg rounded-2xl border-2 transition-all duration-200 transform hover:scale-105 shadow-lg min-h-[60px] sm:min-h-[68px] ${getButtonColor()} ${
+              className={`w-full py-5 sm:py-6 px-5 sm:px-6 text-white font-bold text-lg sm:text-xl rounded-3xl border-2 transition-all duration-200 transform hover:scale-105 shadow-lg min-h-[72px] sm:min-h-[80px] ${getButtonColor()} ${
                 isHolding ? "scale-95" : ""
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
@@ -198,7 +198,7 @@ function CountdownBomb() {
           <button
             type="button"
             onClick={resetTimer}
-            className="w-full py-2 sm:py-2 px-3 sm:px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-mono text-xs sm:text-sm rounded-xl border border-gray-600 transition-colors min-h-[36px] sm:min-h-[40px]"
+            className="w-full py-3 sm:py-3 px-4 sm:px-5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-mono text-sm sm:text-sm rounded-2xl border border-gray-600 transition-colors min-h-[48px] sm:min-h-[52px]"
           >
             RESET
           </button>
