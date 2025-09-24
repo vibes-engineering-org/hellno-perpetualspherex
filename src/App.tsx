@@ -84,17 +84,23 @@ function CountdownBomb() {
     };
   }, [isActive, isHolding, timeLeft]);
 
+  // Check if bomb should be defused when timer reaches 0 while holding
+  useEffect(() => {
+    if (isActive && isHolding && timeLeft === 0) {
+      setIsDefused(true);
+      setIsActive(false);
+    }
+  }, [isActive, isHolding, timeLeft]);
+
   const handleDefuseStart = useCallback(() => {
     setIsHolding(true);
   }, []);
 
   const handleDefuseEnd = useCallback(() => {
     setIsHolding(false);
-    if (timeLeft > 0) {
-      setIsDefused(true);
-      setIsActive(false);
-    }
-  }, [timeLeft]);
+    // Don't automatically defuse when releasing the button
+    // The bomb only gets defused if held continuously until timer reaches 0
+  }, []);
 
   const getTimerColor = () => {
     if (isDefused) return "text-green-400";
@@ -174,8 +180,8 @@ function CountdownBomb() {
 
         <div className="mt-4 sm:mt-6 text-xs sm:text-xs text-gray-400 font-mono px-2 sm:px-0">
           {!isActive && timeLeft > 0 && !isDefused && "Click ARM BOMB to start countdown"}
-          {isActive && !isHolding && "Hold STOP THE BOMB to defuse"}
-          {isHolding && "Keep holding to defuse..."}
+          {isActive && !isHolding && "Hold STOP THE BOMB until timer hits 0 to defuse"}
+          {isHolding && "Keep holding until timer reaches 0..."}
           {isDefused && "Bomb successfully defused!"}
           {timeLeft === 0 && !isDefused && "Game over! Click RESET to try again"}
         </div>
