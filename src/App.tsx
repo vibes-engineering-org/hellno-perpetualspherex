@@ -44,8 +44,10 @@ function CountdownBomb() {
   const [isDefused, setIsDefused] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
   const [showExplosion, setShowExplosion] = useState(false);
+  const [holdTimeLeft, setHoldTimeLeft] = useState(3);
   const intervalRef = useRef<number | null>(null);
   const explosionTimeoutRef = useRef<number | null>(null);
+  const holdIntervalRef = useRef<number | null>(null);
 
   const startTimer = useCallback(() => {
     if (isDefused) return;
@@ -58,6 +60,7 @@ function CountdownBomb() {
     setIsDefused(false);
     setIsHolding(false);
     setShowExplosion(false);
+    setHoldTimeLeft(3);
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -65,6 +68,10 @@ function CountdownBomb() {
     if (explosionTimeoutRef.current) {
       clearTimeout(explosionTimeoutRef.current);
       explosionTimeoutRef.current = null;
+    }
+    if (holdIntervalRef.current) {
+      clearInterval(holdIntervalRef.current);
+      holdIntervalRef.current = null;
     }
   }, []);
 
@@ -91,14 +98,6 @@ function CountdownBomb() {
     };
   }, [isActive, isHolding, timeLeft]);
 
-  // Check if bomb should be defused when timer reaches 0 while holding
-  useEffect(() => {
-    if (isActive && isHolding && timeLeft === 0) {
-      setIsDefused(true);
-      setIsActive(false);
-    }
-  }, [isActive, isHolding, timeLeft]);
-
   useEffect(() => {
     if (timeLeft === 0 && !isDefused && !isHolding) {
       setShowExplosion(true);
@@ -117,14 +116,53 @@ function CountdownBomb() {
   }, [timeLeft, isDefused, isHolding]);
 
   const handleDefuseStart = useCallback(() => {
+    if (isDefused || timeLeft === 0) return;
+    setHoldTimeLeft(3);
     setIsHolding(true);
-  }, []);
+  }, [isDefused, timeLeft]);
 
   const handleDefuseEnd = useCallback(() => {
     setIsHolding(false);
+    setHoldTimeLeft((prev) => (prev === 3 ? prev : 3));
     // Don't automatically defuse when releasing the button
     // The bomb only gets defused if held continuously until timer reaches 0
   }, []);
+
+  useEffect(() => {
+    if (!isHolding || isDefused || timeLeft === 0) {
+      if (holdIntervalRef.current) {
+        clearInterval(holdIntervalRef.current);
+        holdIntervalRef.current = null;
+      }
+      if (!isDefused && timeLeft > 0) {
+        setHoldTimeLeft((prev) => (prev === 3 ? prev : 3));
+      }
+      return;
+    }
+
+    holdIntervalRef.current = window.setInterval(() => {
+      setHoldTimeLeft((prev) => {
+        if (prev <= 1) {
+          if (holdIntervalRef.current) {
+            clearInterval(holdIntervalRef.current);
+            holdIntervalRef.current = null;
+          }
+          setIsDefused(true);
+          setIsActive(false);
+          setIsHolding(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (holdIntervalRef.current) {
+        clearInterval(holdIntervalRef.current);
+        holdIntervalRef.current = null;
+      }
+    };
+  }, [isHolding, isDefused, timeLeft]);
 
   const getTimerColor = () => {
     if (isDefused) return "text-green-400";
@@ -135,7 +173,8 @@ function CountdownBomb() {
 
   const getButtonState = () => {
     if (isDefused) return "DEFUSED";
-    if (isHolding) return "DEFUSING...";
+    if (isHolding)
+      return holdTimeLeft > 0 ? `DISARMING... ${holdTimeLeft}` : "DISARMED";
     return "STOP THE BOMB";
   };
 
@@ -146,10 +185,34 @@ function CountdownBomb() {
     return "bg-cyan-600 hover:bg-cyan-700 border-cyan-400";
   };
 
+  const getBombStatus = () => {
+    if (showExplosion && !isDefused) {
+      return { emoji: "💥", label: "Exploded" };
+    }
+    if (isDefused) {
+      return { emoji: "🛡️", label: "Saved" };
+    }
+    if (isHolding) {
+      return { emoji: "🧰", label: "Disarming" };
+    }
+    return { emoji: "💣", label: "Countdown" };
+  };
+
+  const bombStatus = getBombStatus();
+
   return (
     <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-10 sm:px-8 sm:py-16">
       <div className="relative bg-black/80 backdrop-blur-sm border border-cyan-500/30 rounded-2xl p-5 sm:p-8 max-w-sm sm:max-w-md w-full text-center shadow-2xl shadow-cyan-500/20">
         {showExplosion && !isDefused && <ExplosionOverlay />}
+
+        <div className="flex flex-col items-center mb-6 sm:mb-8">
+          <div className="text-6xl sm:text-7xl drop-shadow-[0_0_18px_rgba(165,243,252,0.35)]">
+            {bombStatus.emoji}
+          </div>
+          <div className="mt-2 text-sm sm:text-base font-semibold uppercase tracking-[0.3em] text-cyan-200/80">
+            {bombStatus.label}
+          </div>
+        </div>
 
         <div className="mb-6 sm:mb-8">
           <div className={`text-6xl sm:text-8xl font-mono font-bold mb-3 sm:mb-4 ${getTimerColor()} drop-shadow-lg`}>
@@ -165,6 +228,20 @@ function CountdownBomb() {
           <div className="text-cyan-300 text-xs sm:text-sm font-mono opacity-70">
             {isActive ? "TIMER ACTIVE" : "TIMER INACTIVE"}
           </div>
+
+          {isHolding && !isDefused && holdTimeLeft > 0 && timeLeft > 0 && (
+            <div className="mt-3 sm:mt-4">
+              <div className="mx-auto h-2 sm:h-2.5 w-40 sm:w-48 rounded-full bg-cyan-900/60 overflow-hidden border border-cyan-500/40">
+                <div
+                  className="h-full bg-yellow-400 transition-all duration-200"
+                  style={{ width: `${((3 - holdTimeLeft) / 3) * 100}%` }}
+                />
+              </div>
+              <div className="mt-2 text-yellow-200 text-xs sm:text-sm font-mono tracking-wide">
+                HOLD TO DISARM: {holdTimeLeft}s
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-3 sm:space-y-4">
@@ -206,8 +283,8 @@ function CountdownBomb() {
 
         <div className="mt-4 sm:mt-6 text-xs sm:text-xs text-gray-400 font-mono px-2 sm:px-0">
           {!isActive && timeLeft > 0 && !isDefused && "Click ARM BOMB to start countdown"}
-          {isActive && !isHolding && "Hold STOP THE BOMB until timer hits 0 to defuse"}
-          {isHolding && "Keep holding until timer reaches 0..."}
+          {isActive && !isHolding && !isDefused && "Hold STOP THE BOMB for 3 seconds to disarm"}
+          {isHolding && !isDefused && "Hold steady... countdown to safety in progress"}
           {isDefused && "Bomb successfully defused!"}
           {timeLeft === 0 && !isDefused && "Game over! Click RESET to try again"}
         </div>
