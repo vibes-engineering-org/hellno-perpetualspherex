@@ -43,7 +43,9 @@ function CountdownBomb() {
   const [isActive, setIsActive] = useState(false);
   const [isDefused, setIsDefused] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
+  const [showExplosion, setShowExplosion] = useState(false);
   const intervalRef = useRef<number | null>(null);
+  const explosionTimeoutRef = useRef<number | null>(null);
 
   const startTimer = useCallback(() => {
     if (isDefused) return;
@@ -55,9 +57,14 @@ function CountdownBomb() {
     setIsActive(false);
     setIsDefused(false);
     setIsHolding(false);
+    setShowExplosion(false);
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
+    }
+    if (explosionTimeoutRef.current) {
+      clearTimeout(explosionTimeoutRef.current);
+      explosionTimeoutRef.current = null;
     }
   }, []);
 
@@ -92,6 +99,23 @@ function CountdownBomb() {
     }
   }, [isActive, isHolding, timeLeft]);
 
+  useEffect(() => {
+    if (timeLeft === 0 && !isDefused && !isHolding) {
+      setShowExplosion(true);
+      explosionTimeoutRef.current = window.setTimeout(() => {
+        setShowExplosion(false);
+        explosionTimeoutRef.current = null;
+      }, 1600);
+    }
+
+    return () => {
+      if (explosionTimeoutRef.current) {
+        clearTimeout(explosionTimeoutRef.current);
+        explosionTimeoutRef.current = null;
+      }
+    };
+  }, [timeLeft, isDefused, isHolding]);
+
   const handleDefuseStart = useCallback(() => {
     setIsHolding(true);
   }, []);
@@ -123,8 +147,10 @@ function CountdownBomb() {
   };
 
   return (
-    <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
-      <div className="bg-black/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-4 sm:p-8 max-w-sm sm:max-w-md w-full text-center shadow-2xl shadow-cyan-500/20">
+    <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-10 sm:px-8 sm:py-16">
+      <div className="relative bg-black/80 backdrop-blur-sm border border-cyan-500/30 rounded-2xl p-5 sm:p-8 max-w-sm sm:max-w-md w-full text-center shadow-2xl shadow-cyan-500/20">
+        {showExplosion && !isDefused && <ExplosionOverlay />}
+
         <div className="mb-6 sm:mb-8">
           <div className={`text-6xl sm:text-8xl font-mono font-bold mb-3 sm:mb-4 ${getTimerColor()} drop-shadow-lg`}>
             {timeLeft.toString().padStart(2, "0")}
@@ -146,7 +172,7 @@ function CountdownBomb() {
             <button
               type="button"
               onClick={startTimer}
-              className="w-full py-3 sm:py-4 px-4 sm:px-6 bg-red-600 hover:bg-red-700 text-white font-bold text-base sm:text-lg rounded-lg border-2 border-red-400 transition-all duration-200 transform hover:scale-105 shadow-lg shadow-red-500/30 min-h-[48px] sm:min-h-[56px]"
+              className="w-full py-5 sm:py-7 px-6 sm:px-8 bg-red-600 hover:bg-red-700 text-white font-semibold text-xl sm:text-2xl rounded-2xl border-2 border-red-400 transition-all duration-200 transform hover:scale-105 shadow-xl shadow-red-500/40 min-h-[72px] sm:min-h-[84px]"
             >
               ARM BOMB
             </button>
@@ -161,7 +187,7 @@ function CountdownBomb() {
               onTouchStart={handleDefuseStart}
               onTouchEnd={handleDefuseEnd}
               disabled={timeLeft === 0 || isDefused}
-              className={`w-full py-4 sm:py-6 px-4 sm:px-6 text-white font-bold text-base sm:text-lg rounded-lg border-2 transition-all duration-200 transform hover:scale-105 shadow-lg min-h-[56px] sm:min-h-[64px] ${getButtonColor()} ${
+              className={`w-full py-4 sm:py-6 px-4 sm:px-6 text-white font-bold text-base sm:text-lg rounded-2xl border-2 transition-all duration-200 transform hover:scale-105 shadow-lg min-h-[60px] sm:min-h-[68px] ${getButtonColor()} ${
                 isHolding ? "scale-95" : ""
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
@@ -172,7 +198,7 @@ function CountdownBomb() {
           <button
             type="button"
             onClick={resetTimer}
-            className="w-full py-2 sm:py-2 px-3 sm:px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-mono text-xs sm:text-sm rounded border border-gray-600 transition-colors min-h-[36px] sm:min-h-[40px]"
+            className="w-full py-2 sm:py-2 px-3 sm:px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-mono text-xs sm:text-sm rounded-xl border border-gray-600 transition-colors min-h-[36px] sm:min-h-[40px]"
           >
             RESET
           </button>
@@ -185,6 +211,44 @@ function CountdownBomb() {
           {isDefused && "Bomb successfully defused!"}
           {timeLeft === 0 && !isDefused && "Game over! Click RESET to try again"}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ExplosionOverlay() {
+  const bursts: {
+    emoji: string;
+    animation: string;
+    top?: string;
+    bottom?: string;
+    left?: string;
+    right?: string;
+  }[] = [
+    { emoji: "💥", top: "10%", left: "15%", animation: "animate-bounce" },
+    { emoji: "🔥", top: "5%", right: "12%", animation: "animate-ping" },
+    { emoji: "⚡", bottom: "12%", left: "18%", animation: "animate-pulse" },
+    { emoji: "💥", bottom: "8%", right: "15%", animation: "animate-bounce" },
+    { emoji: "🔥", top: "30%", left: "50%", animation: "animate-ping" },
+  ];
+
+  return (
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+      <div className="relative w-full h-full">
+        {bursts.map((burst, index) => (
+          <span
+            key={index}
+            className={`absolute text-4xl sm:text-6xl drop-shadow-[0_0_12px_rgba(255,125,125,0.7)] ${burst.animation}`}
+            style={{
+              top: burst.top,
+              bottom: burst.bottom,
+              left: burst.left,
+              right: burst.right,
+            }}
+          >
+            {burst.emoji}
+          </span>
+        ))}
       </div>
     </div>
   );
