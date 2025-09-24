@@ -70,7 +70,12 @@ function MatrixBackground() {
     };
   }, []);
 
-  return <canvas id="matrix-bg" className="absolute inset-0 z-0" style={{ background: "black" }} />;
+  return (
+    <canvas
+      id="matrix-bg"
+      className="absolute inset-0 -z-10 bg-black pointer-events-none"
+    />
+  );
 }
 
 function CountdownBomb() {
