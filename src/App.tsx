@@ -152,30 +152,30 @@ function CountdownBomb() {
   };
 
   return (
-    <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="bg-black/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-8 max-w-md w-full text-center shadow-2xl shadow-cyan-500/20">
-        <div className="mb-8">
-          <div className={`text-8xl font-mono font-bold mb-4 ${getTimerColor()} drop-shadow-lg`}>
+    <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
+      <div className="bg-black/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-4 sm:p-8 max-w-sm sm:max-w-md w-full text-center shadow-2xl shadow-cyan-500/20">
+        <div className="mb-6 sm:mb-8">
+          <div className={`text-6xl sm:text-8xl font-mono font-bold mb-3 sm:mb-4 ${getTimerColor()} drop-shadow-lg`}>
             {timeLeft.toString().padStart(2, "0")}
           </div>
 
           {timeLeft === 0 && !isDefused && (
-            <div className="text-red-400 text-xl font-bold animate-pulse mb-4">BOOM!</div>
+            <div className="text-red-400 text-lg sm:text-xl font-bold animate-pulse mb-3 sm:mb-4">BOOM!</div>
           )}
 
-          {isDefused && <div className="text-green-400 text-xl font-bold mb-4">BOMB DEFUSED</div>}
+          {isDefused && <div className="text-green-400 text-lg sm:text-xl font-bold mb-3 sm:mb-4">BOMB DEFUSED</div>}
 
-          <div className="text-cyan-300 text-sm font-mono opacity-70">
+          <div className="text-cyan-300 text-xs sm:text-sm font-mono opacity-70">
             {isActive ? "TIMER ACTIVE" : "TIMER INACTIVE"}
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {!isActive && timeLeft > 0 && !isDefused && (
             <button
               type="button"
               onClick={startTimer}
-              className="w-full py-4 px-6 bg-red-600 hover:bg-red-700 text-white font-bold text-lg rounded-lg border-2 border-red-400 transition-all duration-200 transform hover:scale-105 shadow-lg shadow-red-500/30"
+              className="w-full py-3 sm:py-4 px-4 sm:px-6 bg-red-600 hover:bg-red-700 text-white font-bold text-base sm:text-lg rounded-lg border-2 border-red-400 transition-all duration-200 transform hover:scale-105 shadow-lg shadow-red-500/30 min-h-[48px] sm:min-h-[56px]"
             >
               ARM BOMB
             </button>
@@ -190,7 +190,7 @@ function CountdownBomb() {
               onTouchStart={handleDefuseStart}
               onTouchEnd={handleDefuseEnd}
               disabled={timeLeft === 0 || isDefused}
-              className={`w-full py-6 px-6 text-white font-bold text-lg rounded-lg border-2 transition-all duration-200 transform hover:scale-105 shadow-lg ${getButtonColor()} ${
+              className={`w-full py-4 sm:py-6 px-4 sm:px-6 text-white font-bold text-base sm:text-lg rounded-lg border-2 transition-all duration-200 transform hover:scale-105 shadow-lg min-h-[56px] sm:min-h-[64px] ${getButtonColor()} ${
                 isHolding ? "scale-95" : ""
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
@@ -201,13 +201,13 @@ function CountdownBomb() {
           <button
             type="button"
             onClick={resetTimer}
-            className="w-full py-2 px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-mono text-sm rounded border border-gray-600 transition-colors"
+            className="w-full py-2 sm:py-2 px-3 sm:px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-mono text-xs sm:text-sm rounded border border-gray-600 transition-colors min-h-[36px] sm:min-h-[40px]"
           >
             RESET
           </button>
         </div>
 
-        <div className="mt-6 text-xs text-gray-400 font-mono">
+        <div className="mt-4 sm:mt-6 text-xs sm:text-xs text-gray-400 font-mono px-2 sm:px-0">
           {!isActive && timeLeft > 0 && !isDefused && "Click ARM BOMB to start countdown"}
           {isActive && !isHolding && "Hold STOP THE BOMB to defuse"}
           {isHolding && "Keep holding to defuse..."}
