@@ -50,6 +50,7 @@ function CountdownBomb() {
   const intervalRef = useRef<number | null>(null);
   const explosionTimeoutRef = useRef<number | null>(null);
   const holdIntervalRef = useRef<number | null>(null);
+  const hasAutoStartedRef = useRef(false);
 
   const startTimer = useCallback(() => {
     if (isDefused) return;
@@ -76,6 +77,13 @@ function CountdownBomb() {
       holdIntervalRef.current = null;
     }
   }, []);
+
+  useEffect(() => {
+    if (!hasAutoStartedRef.current) {
+      hasAutoStartedRef.current = true;
+      startTimer();
+    }
+  }, [startTimer]);
 
   useEffect(() => {
     if (isActive && !isHolding && timeLeft > 0) {
@@ -232,13 +240,13 @@ function CountdownBomb() {
 
   return (
     <section className="relative z-10 flex w-full flex-1 flex-col px-6 py-10 sm:px-10 sm:py-16">
-      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col">
-        <div className="relative flex flex-1 flex-col rounded-3xl border border-cyan-500/30 bg-black/85 p-6 shadow-2xl shadow-cyan-500/20 backdrop-blur-md sm:p-8">
+      <div className="mx-auto flex w-full max-w-xl flex-1 flex-col">
+        <div className="relative flex flex-1 flex-col rounded-3xl border border-cyan-500/30 bg-black/85 p-6 shadow-2xl shadow-cyan-500/20 backdrop-blur-md sm:p-9">
         {showExplosion && !isDefused && <ExplosionOverlay />}
 
-        <div className="flex flex-col items-center text-center mb-7 sm:mb-9">
-          <div className="flex items-center justify-center h-20 w-20 sm:h-24 sm:w-24 rounded-full border border-cyan-400/40 shadow-inner shadow-cyan-500/40">
-            <div className={`h-16 w-16 sm:h-20 sm:w-20 rounded-full ${bombStatus.indicator} blur-[1px]`}></div>
+        <div className="flex flex-col items-center text-center mb-8 sm:mb-10">
+          <div className="flex items-center justify-center h-24 w-24 sm:h-28 sm:w-28 rounded-full border border-cyan-400/40 shadow-inner shadow-cyan-500/40">
+            <div className={`h-20 w-20 sm:h-24 sm:w-24 rounded-full ${bombStatus.indicator} blur-[1px]`}></div>
           </div>
           <div
             className={`mt-4 inline-flex items-center gap-2 rounded-full px-4 py-2 border text-xs sm:text-sm font-semibold uppercase tracking-[0.25em] ${bombStatus.accent}`}
@@ -250,18 +258,21 @@ function CountdownBomb() {
           </p>
         </div>
 
-        <div className="mb-8 sm:mb-10 text-center">
-          <div className={`text-6xl sm:text-8xl font-mono font-bold mb-4 ${getTimerColor()} drop-shadow-[0_0_25px_rgba(16,185,129,0.35)]`}>
-            {timeLeft.toString().padStart(2, "0")}
+        <div className="mb-10 sm:mb-12 text-center">
+          <div className="relative mx-auto flex h-44 w-44 sm:h-60 sm:w-60 items-center justify-center rounded-full border-4 border-cyan-500/40 bg-black/60 shadow-[0_0_40px_rgba(34,211,238,0.25)]">
+            <div className="absolute inset-4 rounded-full border border-cyan-400/40 blur-[0.5px]" />
+            <div className={`relative text-7xl sm:text-[7.5rem] font-mono font-bold ${getTimerColor()} drop-shadow-[0_0_30px_rgba(16,185,129,0.35)]`}>
+              {timeLeft.toString().padStart(2, "0")}
+            </div>
           </div>
 
           {timeLeft === 0 && !isDefused && (
-            <div className="text-red-400 text-lg sm:text-xl font-bold animate-pulse mb-4">BOOM!</div>
+            <div className="mt-6 text-red-400 text-lg sm:text-xl font-bold animate-pulse">BOOM!</div>
           )}
 
-          {isDefused && <div className="text-green-400 text-lg sm:text-xl font-bold mb-4">BOMB DEFUSED</div>}
+          {isDefused && <div className="mt-6 text-green-400 text-lg sm:text-xl font-bold">BOMB DEFUSED</div>}
 
-          <div className="text-cyan-100 text-sm sm:text-base font-semibold tracking-wider">
+          <div className="mt-4 text-cyan-100 text-sm sm:text-base font-semibold tracking-wider">
             {isActive ? "TIMER ACTIVE" : "TIMER INACTIVE"}
           </div>
 
@@ -280,49 +291,50 @@ function CountdownBomb() {
           )}
         </div>
 
-        <div className="space-y-4 sm:space-y-5">
-          {!isActive && timeLeft > 0 && !isDefused && (
-            <button
-              type="button"
-              onClick={startTimer}
-              className="w-full py-7 sm:py-8 px-8 sm:px-10 bg-red-600 hover:bg-red-700 text-white font-semibold text-2xl sm:text-3xl rounded-[2.25rem] border-2 border-red-400 transition-transform duration-200 hover:scale-[1.03] shadow-xl shadow-red-500/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300 min-h-[92px] sm:min-h-[112px]"
-            >
-              ARM BOMB
-            </button>
-          )}
+        <div className="mt-auto flex flex-col gap-5 sm:gap-6">
+          <div className="flex flex-col gap-4 sm:gap-5">
+            {!isActive && timeLeft > 0 && !isDefused && (
+              <button
+                type="button"
+                onClick={startTimer}
+                className="w-full py-8 sm:py-9 px-10 sm:px-12 bg-red-600 hover:bg-red-700 text-white font-semibold text-3xl sm:text-[2.75rem] rounded-[2.5rem] border-2 border-red-400 transition-transform duration-200 hover:scale-[1.03] shadow-xl shadow-red-500/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300 min-h-[104px] sm:min-h-[132px]"
+              >
+                ARM BOMB
+              </button>
+            )}
 
-          {(isActive || isDefused) && (
-            <button
-              type="button"
-              onMouseDown={handleDefuseStart}
-              onMouseUp={handleDefuseEnd}
-              onMouseLeave={handleDefuseEnd}
-              onTouchStart={handleDefuseStart}
-              onTouchEnd={handleDefuseEnd}
-              disabled={timeLeft === 0 || isDefused}
-              className={`w-full py-6 sm:py-7 px-6 sm:px-8 text-white font-bold text-xl sm:text-2xl rounded-[2rem] border-2 transition-transform duration-200 hover:scale-[1.03] shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[88px] sm:min-h-[100px] ${getButtonColor()} ${
-                isHolding ? "scale-95" : ""
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              {getButtonState()}
-            </button>
-          )}
+            {(isActive || isDefused) && (
+              <button
+                type="button"
+                onMouseDown={handleDefuseStart}
+                onMouseUp={handleDefuseEnd}
+                onMouseLeave={handleDefuseEnd}
+                onTouchStart={handleDefuseStart}
+                onTouchEnd={handleDefuseEnd}
+                disabled={timeLeft === 0 || isDefused}
+                className={`w-full py-7 sm:py-8 px-8 sm:px-10 text-white font-bold text-2xl sm:text-[2.25rem] rounded-[2.25rem] border-2 transition-transform duration-200 hover:scale-[1.03] shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[100px] sm:min-h-[120px] ${getButtonColor()} ${
+                  isHolding ? "scale-95" : ""
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {getButtonState()}
+              </button>
+            )}
+          </div>
 
           <button
             type="button"
             onClick={resetTimer}
-            className="w-full py-4 sm:py-4 px-5 sm:px-6 bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold text-base sm:text-lg rounded-[1.75rem] border border-gray-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 min-h-[64px] sm:min-h-[72px]"
+            className="w-full rounded-3xl border border-gray-600/80 bg-gray-900/80 px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-gray-300 transition-colors hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:px-6 sm:py-3.5 sm:text-sm"
           >
             RESET
           </button>
-        </div>
-
-        <div className="mt-auto pt-6 sm:pt-8 text-center text-sm leading-relaxed text-gray-200 sm:text-base">
-          {!isActive && timeLeft > 0 && !isDefused && "Tap ARM BOMB to start the countdown."}
-          {isActive && !isHolding && !isDefused && "Press and hold STOP THE BOMB for three seconds to disarm."}
-          {isHolding && !isDefused && "Keep steady pressure until the disarm meter completes."}
-          {isDefused && "Bomb secured. You can reset to play again."}
-          {timeLeft === 0 && !isDefused && "Too late, hit RESET for another round."}
+          <div className="pt-5 sm:pt-6 text-center text-sm leading-relaxed text-gray-200 sm:text-base">
+            {!isActive && timeLeft > 0 && !isDefused && "Tap ARM BOMB to start the countdown."}
+            {isActive && !isHolding && !isDefused && "Press and hold STOP THE BOMB for three seconds to disarm."}
+            {isHolding && !isDefused && "Keep steady pressure until the disarm meter completes."}
+            {isDefused && "Bomb secured. You can reset to play again."}
+            {timeLeft === 0 && !isDefused && "Too late, hit RESET for another round."}
+          </div>
         </div>
       </div>
       </div>
