@@ -231,8 +231,9 @@ function CountdownBomb() {
   const bombStatus = getBombStatus();
 
   return (
-    <div className="relative z-10 flex w-full flex-1 flex-col items-center justify-center px-6 py-12 sm:px-10 sm:py-16">
-      <div className="relative bg-black/85 backdrop-blur-md border border-cyan-500/30 rounded-3xl p-6 sm:p-8 max-w-md sm:max-w-lg w-full shadow-2xl shadow-cyan-500/20">
+    <section className="relative z-10 flex w-full flex-1 flex-col px-6 py-10 sm:px-10 sm:py-16">
+      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col">
+        <div className="relative flex flex-1 flex-col rounded-3xl border border-cyan-500/30 bg-black/85 p-6 shadow-2xl shadow-cyan-500/20 backdrop-blur-md sm:p-8">
         {showExplosion && !isDefused && <ExplosionOverlay />}
 
         <div className="flex flex-col items-center text-center mb-7 sm:mb-9">
@@ -316,7 +317,7 @@ function CountdownBomb() {
           </button>
         </div>
 
-        <div className="mt-6 sm:mt-8 text-sm sm:text-base text-gray-200 px-1 sm:px-0 text-center leading-relaxed">
+        <div className="mt-auto pt-6 sm:pt-8 text-center text-sm leading-relaxed text-gray-200 sm:text-base">
           {!isActive && timeLeft > 0 && !isDefused && "Tap ARM BOMB to start the countdown."}
           {isActive && !isHolding && !isDefused && "Press and hold STOP THE BOMB for three seconds to disarm."}
           {isHolding && !isDefused && "Keep steady pressure until the disarm meter completes."}
@@ -324,7 +325,8 @@ function CountdownBomb() {
           {timeLeft === 0 && !isDefused && "Too late, hit RESET for another round."}
         </div>
       </div>
-    </div>
+      </div>
+    </section>
   );
 }
 
