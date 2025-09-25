@@ -8,34 +8,21 @@ function App() {
   }, []);
 
   return (
-    <div className="relative flex min-h-dvh flex-col overflow-hidden bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      <CyberpunkBackground />
-      <main className="flex flex-1">
+    <div className="min-h-dvh bg-slate-950 text-slate-100">
+      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-8 px-4 py-10 sm:py-12">
+        <header className="space-y-2 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+            Countdown Control
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-100">
+            Defuse The Device
+          </h1>
+          <p className="text-sm text-slate-400">
+            Keep an eye on the clock and hold steady to disarm before time runs out.
+          </p>
+        </header>
         <CountdownBomb />
       </main>
-    </div>
-  );
-}
-
-function CyberpunkBackground() {
-  return (
-    <div className="absolute inset-0 -z-10 pointer-events-none">
-      {/* Main gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900" />
-
-      {/* Cyberpunk grid overlay */}
-      <div className="absolute inset-0 opacity-20 bg-[linear-gradient(0deg,transparent_24%,rgba(59,130,246,0.3)_25%,rgba(59,130,246,0.3)_26%,transparent_27%,transparent_74%,rgba(59,130,246,0.3)_75%,rgba(59,130,246,0.3)_76%,transparent_77%,transparent),linear-gradient(90deg,transparent_24%,rgba(59,130,246,0.3)_25%,rgba(59,130,246,0.3)_26%,transparent_27%,transparent_74%,rgba(59,130,246,0.3)_75%,rgba(59,130,246,0.3)_76%,transparent_77%,transparent)] bg-[100px_100px]" />
-
-      {/* Neon accent lines */}
-      <div className="absolute top-1/4 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60" />
-      <div className="absolute top-3/4 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-40" />
-
-      {/* Glowing orbs */}
-      <div className="absolute top-20 right-20 w-32 h-32 bg-cyan-400 rounded-full blur-3xl opacity-20" />
-      <div className="absolute bottom-40 left-20 w-24 h-24 bg-purple-400 rounded-full blur-2xl opacity-30" />
-
-      {/* Subtle scanlines */}
-      <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_51%)] bg-[length:100%_4px] opacity-40" />
     </div>
   );
 }
@@ -87,7 +74,7 @@ function CountdownBomb() {
 
   useEffect(() => {
     if (isActive && !isHolding && timeLeft > 0) {
-      intervalRef.current = setInterval(() => {
+      intervalRef.current = window.setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
             setIsActive(false);
@@ -134,7 +121,6 @@ function CountdownBomb() {
   const handleDefuseEnd = useCallback(() => {
     setIsHolding(false);
     setHoldTimeLeft((prev) => (prev === 3 ? prev : 3));
-    // Don't automatically defuse when releasing the button
     // The bomb only gets defused if held continuously until timer reaches 0
   }, []);
 
@@ -175,169 +161,150 @@ function CountdownBomb() {
   }, [isHolding, isDefused, timeLeft]);
 
   const getTimerColor = () => {
-    if (isDefused) return "text-green-400";
+    if (isDefused) return "text-emerald-400";
     if (timeLeft <= 3) return "text-red-400";
-    if (timeLeft <= 5) return "text-yellow-400";
-    return "text-cyan-400";
+    if (timeLeft <= 5) return "text-amber-300";
+    return "text-sky-300";
   };
 
   const getButtonState = () => {
-    if (isDefused) return "DEFUSED";
+    if (isDefused) return "Defused";
     if (isHolding)
-      return holdTimeLeft > 0 ? `DISARMING... ${holdTimeLeft}` : "DISARMED";
-    return "STOP THE BOMB";
+      return holdTimeLeft > 0 ? `Disarming... ${holdTimeLeft}s` : "Disarmed";
+    return "Stop The Bomb";
   };
 
   const getButtonColor = () => {
-    if (isDefused) return "bg-green-600 hover:bg-green-700 border-green-400";
-    if (isHolding) return "bg-yellow-600 hover:bg-yellow-700 border-yellow-400";
-    if (timeLeft <= 3) return "bg-red-600 hover:bg-red-700 border-red-400";
-    return "bg-cyan-600 hover:bg-cyan-700 border-cyan-400";
+    if (isDefused)
+      return "bg-emerald-500 hover:bg-emerald-600 focus-visible:outline-emerald-400";
+    if (isHolding)
+      return "bg-amber-500 hover:bg-amber-600 focus-visible:outline-amber-300";
+    if (timeLeft <= 3)
+      return "bg-red-500 hover:bg-red-600 focus-visible:outline-red-300";
+    return "bg-sky-500 hover:bg-sky-600 focus-visible:outline-sky-300";
   };
 
   const getBombStatus = () => {
     if (showExplosion && !isDefused) {
       return {
         label: "Explosion",
-        indicator: "bg-gradient-to-br from-red-500 via-amber-500 to-yellow-400",
-        accent: "text-red-100 border-red-500/60 bg-red-500/10",
+        accent: "border border-red-500/40 bg-red-500/10 text-red-200",
         helper: "Boom! Reset to try again",
       };
     }
     if (isDefused) {
       return {
         label: "Defused",
-        indicator: "bg-gradient-to-br from-green-500 via-emerald-500 to-lime-400",
-        accent: "text-emerald-100 border-emerald-400/70 bg-emerald-500/10",
+        accent: "border border-emerald-500/40 bg-emerald-500/10 text-emerald-200",
         helper: "Bomb successfully disarmed",
       };
     }
     if (isActive && !isHolding) {
       return {
         label: "Live Timer",
-        indicator: "bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-500",
-        accent: "text-cyan-100 border-cyan-400/60 bg-cyan-400/10",
+        accent: "border border-sky-500/30 bg-sky-500/10 text-sky-100",
         helper: "Countdown in progress, stay sharp",
       };
     }
     if (isHolding) {
       return {
         label: "Disarming",
-        indicator: "bg-gradient-to-br from-yellow-400 via-amber-400 to-orange-400",
-        accent: "text-amber-100 border-amber-400/60 bg-amber-400/10",
+        accent: "border border-amber-500/30 bg-amber-500/10 text-amber-100",
         helper: "Keep holding to finish the job",
       };
     }
     return {
       label: "Armed",
-      indicator: "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-500",
-      accent: "text-cyan-100 border-cyan-400/60 bg-cyan-400/10",
-      helper: "Tap ARM BOMB to begin",
+      accent: "border border-slate-600/50 bg-slate-800/70 text-slate-200",
+      helper: "Tap Arm Bomb to begin",
     };
   };
 
   const bombStatus = getBombStatus();
 
   return (
-    <section className="relative z-10 flex w-full flex-1 flex-col px-4 py-8 sm:px-10 sm:py-16">
-      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col">
-        <div className="relative flex flex-1 flex-col rounded-3xl border border-cyan-500/30 bg-black/85 p-7 shadow-2xl shadow-cyan-500/20 backdrop-blur-md sm:p-9">
+    <section className="flex flex-1 flex-col">
+      <div className="relative flex flex-1 flex-col gap-8 rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl sm:p-8">
+        <div className="space-y-3 text-center">
+          <div className={`mx-auto inline-flex items-center justify-center rounded-full px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] ${bombStatus.accent}`}>
+            {bombStatus.label}
+          </div>
+          <p className="text-sm text-slate-300">{bombStatus.helper}</p>
+        </div>
+
+        <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 p-8 text-center">
           {showExplosion && !isDefused && <ExplosionOverlay />}
-
-          <div className="flex flex-col items-center text-center mb-8 sm:mb-10">
-            <div className="flex items-center justify-center h-28 w-28 sm:h-32 sm:w-32 rounded-full border border-cyan-400/40 shadow-inner shadow-cyan-500/40">
-              <div className={`h-24 w-24 sm:h-28 sm:w-28 rounded-full ${bombStatus.indicator} blur-[1px]`}></div>
-            </div>
-            <div
-              className={`mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 border text-sm sm:text-base font-semibold uppercase tracking-[0.25em] ${bombStatus.accent}`}
-            >
-              {bombStatus.label}
-            </div>
-            <p className="mt-3 text-base sm:text-lg text-cyan-100/80 font-medium">
-              {bombStatus.helper}
-            </p>
+          <div className={`relative text-6xl font-mono font-bold ${getTimerColor()}`}>
+            {timeLeft.toString().padStart(2, "0")}
           </div>
+          <p className="mt-2 text-xs font-medium uppercase tracking-[0.4em] text-slate-400">
+            {isActive ? "Timer Active" : "Timer Idle"}
+          </p>
 
-          <div className="mb-10 sm:mb-12 text-center">
-            <div className="relative mx-auto flex h-48 w-48 sm:h-64 sm:w-64 items-center justify-center rounded-full border-[5px] border-cyan-500/40 bg-black/60 shadow-[0_0_46px_rgba(34,211,238,0.28)]">
-              <div className="absolute inset-4 rounded-full border border-cyan-400/40 blur-[0.5px]" />
-              <div className={`relative text-8xl sm:text-[7.5rem] font-mono font-bold ${getTimerColor()} drop-shadow-[0_0_30px_rgba(16,185,129,0.35)]`}>
-                {timeLeft.toString().padStart(2, "0")}
+          {timeLeft === 0 && !isDefused && (
+            <p className="mt-4 text-sm font-semibold text-red-400">Time expired. Reset to try again.</p>
+          )}
+
+          {isDefused && (
+            <p className="mt-4 text-sm font-semibold text-emerald-400">Device secure. You can reset to restart.</p>
+          )}
+
+          {isHolding && !isDefused && holdTimeLeft > 0 && timeLeft > 0 && (
+            <div className="mt-6 space-y-2">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                <div
+                  className="h-full rounded-full bg-amber-400 transition-all duration-200"
+                  style={{ width: `${((3 - holdTimeLeft) / 3) * 100}%` }}
+                />
               </div>
+              <p className="text-xs font-medium text-amber-300">Hold steady for {holdTimeLeft}s</p>
             </div>
+          )}
+        </div>
 
-            {timeLeft === 0 && !isDefused && (
-              <div className="mt-6 text-red-400 text-xl sm:text-2xl font-bold animate-pulse">BOOM!</div>
-            )}
-
-            {isDefused && (
-              <div className="mt-6 text-green-400 text-xl sm:text-2xl font-bold">BOMB DEFUSED</div>
-            )}
-
-            <div className="mt-4 text-cyan-100 text-base sm:text-lg font-semibold tracking-wider">
-              {isActive ? "TIMER ACTIVE" : "TIMER INACTIVE"}
-            </div>
-
-            {isHolding && !isDefused && holdTimeLeft > 0 && timeLeft > 0 && (
-              <div className="mt-5">
-                <div className="mx-auto h-3.5 sm:h-4 w-56 sm:w-64 rounded-full bg-cyan-900/60 overflow-hidden border border-cyan-500/50">
-                  <div
-                    className="h-full bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-400 transition-all duration-200"
-                    style={{ width: `${((3 - holdTimeLeft) / 3) * 100}%` }}
-                  />
-                </div>
-                <div className="mt-3 text-yellow-100 text-base sm:text-lg font-medium tracking-wide">
-                  HOLD TO DISARM: {holdTimeLeft}s
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-auto flex flex-col gap-5 sm:gap-6">
-            <div className="flex flex-col gap-4 sm:gap-5">
-              {!isActive && timeLeft > 0 && !isDefused && (
-                <button
-                  type="button"
-                  onClick={startTimer}
-                  className="w-full py-9 sm:py-10 px-10 sm:px-12 bg-red-600 hover:bg-red-700 text-white font-semibold text-[2.5rem] sm:text-[2.75rem] rounded-[2.5rem] border-2 border-red-400 transition-transform duration-200 hover:scale-[1.04] shadow-xl shadow-red-500/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300 min-h-[120px] sm:min-h-[140px]"
-                >
-                  ARM BOMB
-                </button>
-              )}
-
-              {(isActive || isDefused) && (
-                <button
-                  type="button"
-                  onMouseDown={handleDefuseStart}
-                  onMouseUp={handleDefuseEnd}
-                  onMouseLeave={handleDefuseEnd}
-                  onTouchStart={handleDefuseStart}
-                  onTouchEnd={handleDefuseEnd}
-                  disabled={timeLeft === 0 || isDefused}
-                  className={`w-full py-8 sm:py-9 px-10 sm:px-12 text-white font-bold text-[2.25rem] sm:text-[2.5rem] rounded-[2.5rem] border-2 transition-transform duration-200 hover:scale-[1.05] shadow-[0_25px_50px_-12px_rgba(34,211,238,0.45)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200 min-h-[128px] sm:min-h-[144px] ${getButtonColor()} ${
-                    isHolding ? "scale-95" : ""
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {getButtonState()}
-                </button>
-              )}
-            </div>
-
+        <div className="mt-auto space-y-4">
+          {!isActive && timeLeft > 0 && !isDefused && (
             <button
               type="button"
-              onClick={resetTimer}
-              className="w-full rounded-3xl border border-gray-600/80 bg-gray-900/80 px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.3em] text-gray-300 transition-colors hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:px-6 sm:py-3.5 sm:text-base"
+              onClick={startTimer}
+              className="w-full rounded-2xl bg-orange-500 px-6 py-4 text-base font-semibold text-white transition hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
             >
-              RESET
+              Arm Bomb
             </button>
-            <div className="pt-5 sm:pt-6 text-center text-base leading-relaxed text-gray-200 sm:text-lg">
-              {!isActive && timeLeft > 0 && !isDefused && "Tap ARM BOMB to start the countdown."}
-              {isActive && !isHolding && !isDefused && "Press and hold STOP THE BOMB for three seconds to disarm."}
-              {isHolding && !isDefused && "Keep steady pressure until the disarm meter completes."}
-              {isDefused && "Bomb secured. You can reset to play again."}
-              {timeLeft === 0 && !isDefused && "Too late, hit RESET for another round."}
-            </div>
-          </div>
+          )}
+
+          {(isActive || isDefused) && (
+            <button
+              type="button"
+              onMouseDown={handleDefuseStart}
+              onMouseUp={handleDefuseEnd}
+              onMouseLeave={handleDefuseEnd}
+              onTouchStart={handleDefuseStart}
+              onTouchEnd={handleDefuseEnd}
+              disabled={timeLeft === 0 || isDefused}
+              className={`w-full rounded-2xl px-6 py-4 text-base font-semibold text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${getButtonColor()} ${
+                isHolding ? "scale-[0.99]" : ""
+              } disabled:cursor-not-allowed disabled:opacity-50`}
+            >
+              {getButtonState()}
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={resetTimer}
+            className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-slate-300 transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
+          >
+            Reset
+          </button>
+
+          <p className="text-center text-sm text-slate-400">
+            {!isActive && timeLeft > 0 && !isDefused && "Tap Arm Bomb to start the countdown."}
+            {isActive && !isHolding && !isDefused && "Press and hold Stop The Bomb for three seconds to disarm."}
+            {isHolding && !isDefused && "Keep holding until the progress bar completes."}
+            {isDefused && "Bomb secured. Reset to play again."}
+            {timeLeft === 0 && !isDefused && "Too late. Hit reset for another round."}
+          </p>
         </div>
       </div>
     </section>
@@ -345,68 +312,9 @@ function CountdownBomb() {
 }
 
 function ExplosionOverlay() {
-  const bursts: {
-    size: string;
-    color: string;
-    animation: string;
-    top?: string;
-    bottom?: string;
-    left?: string;
-    right?: string;
-  }[] = [
-    {
-      size: "h-16 w-16 sm:h-20 sm:w-20",
-      color: "from-red-500 via-amber-400 to-yellow-300",
-      animation: "animate-ping",
-      top: "8%",
-      left: "12%",
-    },
-    {
-      size: "h-20 w-20 sm:h-24 sm:w-24",
-      color: "from-orange-500 via-red-400 to-amber-300",
-      animation: "animate-bounce",
-      top: "12%",
-      right: "10%",
-    },
-    {
-      size: "h-14 w-14 sm:h-18 sm:w-18",
-      color: "from-yellow-400 via-amber-500 to-orange-500",
-      animation: "animate-pulse",
-      bottom: "12%",
-      left: "18%",
-    },
-    {
-      size: "h-18 w-18 sm:h-22 sm:w-22",
-      color: "from-red-600 via-orange-500 to-yellow-400",
-      animation: "animate-bounce",
-      bottom: "10%",
-      right: "14%",
-    },
-    {
-      size: "h-12 w-12 sm:h-16 sm:w-16",
-      color: "from-amber-400 via-yellow-400 to-emerald-300",
-      animation: "animate-ping",
-      top: "28%",
-      left: "50%",
-    },
-  ];
-
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-      <div className="relative w-full h-full">
-        {bursts.map((burst, index) => (
-          <span
-            key={index}
-            className={`absolute ${burst.size} rounded-full bg-gradient-to-br ${burst.color} opacity-70 blur-[1px] ${burst.animation}`}
-            style={{
-              top: burst.top,
-              bottom: burst.bottom,
-              left: burst.left,
-              right: burst.right,
-            }}
-          ></span>
-        ))}
-      </div>
+      <div className="h-40 w-40 rounded-full bg-red-500/20 blur-3xl" />
     </div>
   );
 }
