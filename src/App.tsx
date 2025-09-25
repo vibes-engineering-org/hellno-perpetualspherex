@@ -8,9 +8,11 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+    <div className="relative flex min-h-dvh flex-col overflow-hidden bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
       <CyberpunkBackground />
-      <CountdownBomb />
+      <main className="flex flex-1">
+        <CountdownBomb />
+      </main>
     </div>
   );
 }
@@ -229,7 +231,7 @@ function CountdownBomb() {
   const bombStatus = getBombStatus();
 
   return (
-    <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-12 sm:px-10 sm:py-16">
+    <div className="relative z-10 flex w-full flex-1 flex-col items-center justify-center px-6 py-12 sm:px-10 sm:py-16">
       <div className="relative bg-black/85 backdrop-blur-md border border-cyan-500/30 rounded-3xl p-6 sm:p-8 max-w-md sm:max-w-lg w-full shadow-2xl shadow-cyan-500/20">
         {showExplosion && !isDefused && <ExplosionOverlay />}
 
