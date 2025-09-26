@@ -1,5 +1,6 @@
 import { sdk } from "@farcaster/miniapp-sdk";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { RippleButton } from "./components/RippleButton";
 
 function App() {
   useEffect(() => {
@@ -269,17 +270,18 @@ function CountdownBomb() {
 
         <div className="relative mt-auto space-y-4">
           {!isActive && timeLeft > 0 && !isDefused && (
-            <button
+            <RippleButton
               type="button"
               onClick={startTimer}
               className="w-full rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4 text-base font-semibold text-white transition-all duration-200 hover:from-orange-600 hover:to-orange-700 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 shadow-lg hover:shadow-xl"
+              rippleColor="rgba(255, 193, 7, 0.7)"
             >
               Arm Bomb
-            </button>
+            </RippleButton>
           )}
 
           {(isActive || isDefused) && (
-            <button
+            <RippleButton
               type="button"
               onMouseDown={handleDefuseStart}
               onMouseUp={handleDefuseEnd}
@@ -290,18 +292,28 @@ function CountdownBomb() {
               className={`w-full rounded-2xl px-6 py-5 text-base font-semibold text-white transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 shadow-lg hover:shadow-xl ${getButtonColor()} ${
                 isHolding ? "scale-[0.96] shadow-inner" : "hover:scale-[1.02] active:scale-[0.98]"
               } disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100`}
+              rippleColor={
+                isDefused
+                  ? "rgba(34, 197, 94, 0.8)"
+                  : isHolding
+                    ? "rgba(245, 158, 11, 0.8)"
+                    : timeLeft <= 3
+                      ? "rgba(239, 68, 68, 0.8)"
+                      : "rgba(14, 165, 233, 0.8)"
+              }
             >
               {getButtonState()}
-            </button>
+            </RippleButton>
           )}
 
-          <button
+          <RippleButton
             type="button"
             onClick={resetTimer}
             className="w-full rounded-2xl border border-slate-700/60 bg-slate-900/80 backdrop-blur-sm px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-slate-300 transition-all duration-200 hover:bg-slate-800/80 hover:border-slate-600 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 shadow-md hover:shadow-lg"
+            rippleColor="rgba(148, 163, 184, 0.6)"
           >
             Reset
-          </button>
+          </RippleButton>
 
           <p className="text-center text-sm text-slate-400/80 leading-relaxed px-2">
             {!isActive && timeLeft > 0 && !isDefused && "Tap Arm Bomb to start the countdown."}
