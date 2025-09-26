@@ -23,3 +23,91 @@
     color: #181818;
   }
 }
+
+@layer utilities {
+  .animate-in {
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+  }
+
+  .fade-in {
+    animation-name: fadeIn;
+  }
+
+  .slide-in-from-top-4 {
+    animation-name: slideInFromTop;
+  }
+
+  .slide-in-from-bottom-6 {
+    animation-name: slideInFromBottom;
+  }
+
+  .slide-in-from-bottom-2 {
+    animation-name: slideInFromBottomSmall;
+  }
+
+  .delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .duration-300 {
+    animation-duration: 300ms;
+  }
+
+  .duration-700 {
+    animation-duration: 700ms;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottomSmall {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced mobile touch interactions */
+@media (hover: none) and (pointer: coarse) {
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+}

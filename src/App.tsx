@@ -8,16 +8,13 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-dvh bg-slate-950 text-slate-100">
-      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-8 px-4 py-10 sm:py-12">
-        <header className="space-y-2 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-            Countdown Control
-          </p>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-100">
-            Defuse The Device
-          </h1>
-          <p className="text-sm text-slate-400">
+    <div className="min-h-dvh bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-700/20 via-slate-900/5 to-transparent pointer-events-none" />
+      <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-4 py-8 sm:py-10">
+        <header className="space-y-3 text-center animate-in fade-in slide-in-from-top-4 duration-700">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400/80">Countdown Control</p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-100 sm:text-4xl">Defuse The Device</h1>
+          <p className="text-sm text-slate-400/90 leading-relaxed max-w-xs mx-auto">
             Keep an eye on the clock and hold steady to disarm before time runs out.
           </p>
         </header>
@@ -169,18 +166,14 @@ function CountdownBomb() {
 
   const getButtonState = () => {
     if (isDefused) return "Defused";
-    if (isHolding)
-      return holdTimeLeft > 0 ? `Disarming... ${holdTimeLeft}s` : "Disarmed";
+    if (isHolding) return holdTimeLeft > 0 ? `Disarming... ${holdTimeLeft}s` : "Disarmed";
     return "Stop The Bomb";
   };
 
   const getButtonColor = () => {
-    if (isDefused)
-      return "bg-emerald-500 hover:bg-emerald-600 focus-visible:outline-emerald-400";
-    if (isHolding)
-      return "bg-amber-500 hover:bg-amber-600 focus-visible:outline-amber-300";
-    if (timeLeft <= 3)
-      return "bg-red-500 hover:bg-red-600 focus-visible:outline-red-300";
+    if (isDefused) return "bg-emerald-500 hover:bg-emerald-600 focus-visible:outline-emerald-400";
+    if (isHolding) return "bg-amber-500 hover:bg-amber-600 focus-visible:outline-amber-300";
+    if (timeLeft <= 3) return "bg-red-500 hover:bg-red-600 focus-visible:outline-red-300";
     return "bg-sky-500 hover:bg-sky-600 focus-visible:outline-sky-300";
   };
 
@@ -223,51 +216,63 @@ function CountdownBomb() {
   const bombStatus = getBombStatus();
 
   return (
-    <section className="flex flex-1 flex-col">
-      <div className="relative flex flex-1 flex-col gap-8 rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl sm:p-8">
-        <div className="space-y-3 text-center">
-          <div className={`mx-auto inline-flex items-center justify-center rounded-full px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] ${bombStatus.accent}`}>
+    <section className="flex flex-1 flex-col animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
+      <div className="relative flex flex-1 flex-col gap-6 rounded-3xl border border-slate-800/50 bg-slate-900/80 backdrop-blur-sm p-6 shadow-2xl shadow-slate-950/50 sm:p-8">
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-slate-800/10 via-transparent to-slate-800/5 pointer-events-none" />
+
+        <div className="relative space-y-3 text-center">
+          <div
+            className={`mx-auto inline-flex items-center justify-center rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition-all duration-300 ${bombStatus.accent}`}
+          >
             {bombStatus.label}
           </div>
-          <p className="text-sm text-slate-300">{bombStatus.helper}</p>
+          <p className="text-sm text-slate-300/90">{bombStatus.helper}</p>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 p-8 text-center">
+        <div className="relative overflow-hidden rounded-2xl border border-slate-800/60 bg-slate-950/90 backdrop-blur-sm p-8 text-center shadow-inner">
           {showExplosion && !isDefused && <ExplosionOverlay />}
-          <div className={`relative text-6xl font-mono font-bold ${getTimerColor()}`}>
+          <div
+            className={`relative text-7xl font-mono font-bold transition-all duration-300 ${getTimerColor()} ${
+              timeLeft <= 3 && isActive ? "animate-pulse" : ""
+            }`}
+          >
             {timeLeft.toString().padStart(2, "0")}
           </div>
-          <p className="mt-2 text-xs font-medium uppercase tracking-[0.4em] text-slate-400">
+          <p className="mt-3 text-xs font-medium uppercase tracking-[0.4em] text-slate-400/80">
             {isActive ? "Timer Active" : "Timer Idle"}
           </p>
 
           {timeLeft === 0 && !isDefused && (
-            <p className="mt-4 text-sm font-semibold text-red-400">Time expired. Reset to try again.</p>
+            <p className="mt-4 text-sm font-semibold text-red-400 animate-in fade-in duration-300">
+              Time expired. Reset to try again.
+            </p>
           )}
 
           {isDefused && (
-            <p className="mt-4 text-sm font-semibold text-emerald-400">Device secure. You can reset to restart.</p>
+            <p className="mt-4 text-sm font-semibold text-emerald-400 animate-in fade-in duration-300">
+              Device secure. You can reset to restart.
+            </p>
           )}
 
           {isHolding && !isDefused && holdTimeLeft > 0 && timeLeft > 0 && (
-            <div className="mt-6 space-y-2">
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+            <div className="mt-6 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="h-3 w-full overflow-hidden rounded-full bg-slate-800/80 shadow-inner">
                 <div
-                  className="h-full rounded-full bg-amber-400 transition-all duration-200"
+                  className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-300 transition-all duration-200 shadow-sm"
                   style={{ width: `${((3 - holdTimeLeft) / 3) * 100}%` }}
                 />
               </div>
-              <p className="text-xs font-medium text-amber-300">Hold steady for {holdTimeLeft}s</p>
+              <p className="text-xs font-medium text-amber-300/90">Hold steady for {holdTimeLeft}s</p>
             </div>
           )}
         </div>
 
-        <div className="mt-auto space-y-4">
+        <div className="relative mt-auto space-y-4">
           {!isActive && timeLeft > 0 && !isDefused && (
             <button
               type="button"
               onClick={startTimer}
-              className="w-full rounded-2xl bg-orange-500 px-6 py-4 text-base font-semibold text-white transition hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
+              className="w-full rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4 text-base font-semibold text-white transition-all duration-200 hover:from-orange-600 hover:to-orange-700 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 shadow-lg hover:shadow-xl"
             >
               Arm Bomb
             </button>
@@ -282,9 +287,9 @@ function CountdownBomb() {
               onTouchStart={handleDefuseStart}
               onTouchEnd={handleDefuseEnd}
               disabled={timeLeft === 0 || isDefused}
-              className={`w-full rounded-2xl px-6 py-4 text-base font-semibold text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${getButtonColor()} ${
-                isHolding ? "scale-[0.99]" : ""
-              } disabled:cursor-not-allowed disabled:opacity-50`}
+              className={`w-full rounded-2xl px-6 py-5 text-base font-semibold text-white transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 shadow-lg hover:shadow-xl ${getButtonColor()} ${
+                isHolding ? "scale-[0.96] shadow-inner" : "hover:scale-[1.02] active:scale-[0.98]"
+              } disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100`}
             >
               {getButtonState()}
             </button>
@@ -293,12 +298,12 @@ function CountdownBomb() {
           <button
             type="button"
             onClick={resetTimer}
-            className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-slate-300 transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
+            className="w-full rounded-2xl border border-slate-700/60 bg-slate-900/80 backdrop-blur-sm px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-slate-300 transition-all duration-200 hover:bg-slate-800/80 hover:border-slate-600 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 shadow-md hover:shadow-lg"
           >
             Reset
           </button>
 
-          <p className="text-center text-sm text-slate-400">
+          <p className="text-center text-sm text-slate-400/80 leading-relaxed px-2">
             {!isActive && timeLeft > 0 && !isDefused && "Tap Arm Bomb to start the countdown."}
             {isActive && !isHolding && !isDefused && "Press and hold Stop The Bomb for three seconds to disarm."}
             {isHolding && !isDefused && "Keep holding until the progress bar completes."}
@@ -313,8 +318,10 @@ function CountdownBomb() {
 
 function ExplosionOverlay() {
   return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-      <div className="h-40 w-40 rounded-full bg-red-500/20 blur-3xl" />
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center animate-in fade-in duration-100">
+      <div className="h-40 w-40 rounded-full bg-red-500/30 blur-3xl animate-pulse" />
+      <div className="absolute h-32 w-32 rounded-full bg-orange-500/20 blur-2xl animate-ping" />
+      <div className="absolute h-24 w-24 rounded-full bg-yellow-500/25 blur-xl animate-pulse delay-75" />
     </div>
   );
 }
